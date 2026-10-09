@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biblioteca · Acervo</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">⌁</span><div><strong>Biblioteca</strong><small>gestão do acervo</small></div></div>
+      <nav>
+        <button class="nav-item active" data-view="overview"><span>⌂</span> Visão geral</button>
+        <button class="nav-item" data-view="autores"><span>✦</span> Autores</button>
+        <button class="nav-item" data-view="livros"><span>▤</span> Livros</button>
+      </nav>
+      <div class="sidebar-foot">API conectada<br><span class="status-dot"></span> 127.0.0.1:8000</div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar"><div><p class="eyebrow">PAINEL DO ACERVO</p><h1 id="page-title">Visão geral</h1></div><a class="api-link" href="/docs" target="_blank">Abrir Swagger ↗</a></header>
+      <div id="toast" class="toast" role="status"></div>
+
+      <section id="overview-view" class="view">
+        <div class="hero"><div><p class="eyebrow warm">BEM-VINDO</p><h2>Seu acervo,<br><em>em ordem.</em></h2><p class="hero-copy">Cadastre autores e organize seus livros em um só lugar.</p><button class="primary" data-view="livros">Ver livros <span>→</span></button></div><div class="hero-art">✦<span>📚</span></div></div>
+        <div class="stats"><div class="stat-card"><span class="stat-icon violet">✦</span><div><small>Autores cadastrados</small><strong id="authors-count">—</strong></div></div><div class="stat-card"><span class="stat-icon orange">▤</span><div><small>Livros no acervo</small><strong id="books-count">—</strong></div></div><div class="stat-card"><span class="stat-icon green">✓</span><div><small>Disponíveis</small><strong id="available-count">—</strong></div></div></div>
+        <div class="recent-head"><h3>Livros recentes</h3><button class="text-button" data-view="livros">Ver todos →</button></div><div id="recent-books" class="table-wrap"></div>
+      </section>
+
+      <section id="autores-view" class="view hidden"><div class="section-head"><div><p class="eyebrow">CADASTRO</p><h2>Autores</h2></div><button class="primary" id="new-author">+ Novo autor</button></div><div class="toolbar"><input id="author-search" type="search" placeholder="Buscar autor por nome..." /><span id="author-total" class="muted"></span></div><div id="authors-table" class="table-wrap"></div></section>
+      <section id="livros-view" class="view hidden"><div class="section-head"><div><p class="eyebrow">CATÁLOGO</p><h2>Livros</h2></div><button class="primary" id="new-book">+ Novo livro</button></div><div class="toolbar"><input id="book-search" type="search" placeholder="Buscar por título..." /><select id="availability-filter"><option value="">Todos os status</option><option value="true">Disponíveis</option><option value="false">Emprestados</option></select><span id="book-total" class="muted"></span></div><div id="books-table" class="table-wrap"></div></section>
+    </main>
+  </div>
+
+  <dialog id="modal"><form method="dialog" id="modal-form"><button class="close" value="cancel" aria-label="Fechar">×</button><p class="eyebrow" id="modal-eyebrow">NOVO CADASTRO</p><h2 id="modal-title">Novo autor</h2><div id="modal-fields"></div><div class="modal-actions"><button class="secondary" value="cancel">Cancelar</button><button class="primary" id="modal-save" value="default">Salvar</button></div></form></dialog>
+  <script src="/static/app.js"></script>
+</body>
+</html>
