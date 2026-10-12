@@ -203,7 +203,7 @@ O banco SQLite (`biblioteca.db`) é criado exclusivamente pelo Alembic.
 | `PATCH` | `/autores/{id}` | Atualiza parcialmente um autor |
 | `DELETE` | `/autores/{id}` | Remove um autor que não possui livros |
 | `POST` | `/livros` | Cria um livro (valida se o autor existe) |
-| `GET` | `/livros` | Lista livros (`?disponivel=true\|false`, `?skip=&limit=`) |
+| `GET` | `/livros` | Lista livros (`?titulo=`, `?autor=`, `?disponivel=true\|false`, `?skip=&limit=`) |
 | `GET` | `/livros/{id}` | Busca um livro pelo id, incluindo o autor |
 | `PATCH` | `/livros/{id}` | Atualiza parcialmente um livro |
 | `DELETE` | `/livros/{id}` | Remove um livro |

@@ -79,8 +79,10 @@ FastAPI/
 │   ├── schemas/         # schemas Pydantic (Create / Update / Response)
 │   ├── routers/         # endpoints agrupados por recurso
 │   └── main.py          # criação do app e registro dos routers
+├── tests/               # testes automatizados (pytest)
 ├── alembic.ini
-└── requirements.txt
+├── requirements.txt
+└── requirements-dev.txt # dependências de teste
 ```
 
 ## Como executar
@@ -138,7 +140,7 @@ Para desfazer a última migration: `alembic downgrade -1`.
 | Método | Rota | Descrição | Respostas |
 |---|---|---|---|
 | `POST` | `/livros` | Cria um livro (valida se o autor existe) | 201, 404, 422 |
-| `GET` | `/livros` | Lista livros (filtro `?disponivel=true\|false`, paginação `?skip=&limit=`) | 200 |
+| `GET` | `/livros` | Lista livros (busca `?titulo=` e `?autor=`, filtro `?disponivel=true\|false`, paginação `?skip=&limit=`) | 200 |
 | `GET` | `/livros/{id}` | Busca um livro pelo id (inclui o autor) | 200, 404 |
 | `PATCH` | `/livros/{id}` | Atualiza parcialmente um livro | 200, 404, 422 |
 | `DELETE` | `/livros/{id}` | Remove um livro | 204, 404 |
@@ -201,6 +203,32 @@ curl -X PATCH http://127.0.0.1:8000/livros/1 \
 ```bash
 curl "http://127.0.0.1:8000/livros?disponivel=true"
 ```
+
+**Buscar livros por título e/ou autor**
+
+```bash
+# título contém "casmurro"
+curl "http://127.0.0.1:8000/livros?titulo=casmurro"
+
+# nome do autor contém "machado"
+curl "http://127.0.0.1:8000/livros?autor=machado"
+
+# filtros combinados (E): título + autor + somente disponíveis
+curl "http://127.0.0.1:8000/livros?titulo=dom&autor=machado&disponivel=true"
+```
+
+A busca por `titulo` e `autor` é parcial (o texto pode estar em qualquer parte do nome) e ignora
+maiúsculas/minúsculas. Quando mais de um filtro é informado, todos precisam ser atendidos. Sem
+resultados, a API retorna `200` com lista vazia.
+
+## Testes
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q
+```
+
+Os testes usam um banco SQLite em memória e não alteram o `biblioteca.db`.
 
 ## Integrantes
 

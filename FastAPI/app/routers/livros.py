@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, contains_eager
 
 from app.core.database import SessionDep
 from app.models import Autor, Livro
@@ -35,13 +35,30 @@ def criar_livro(dados: LivroCreate, db: SessionDep):
 @router.get("", response_model=list[LivroResponse])
 def listar_livros(
     db: SessionDep,
+    titulo: str | None = None,
+    autor: str | None = None,
     disponivel: bool | None = None,
     skip: int = 0,
     limit: int = 100,
 ):
-    consulta = select(Livro).order_by(Livro.id).offset(skip).limit(limit)
+    # O join explícito é necessário para filtrar pelo nome do autor;
+    # contains_eager reaproveita esse join e evita um segundo JOIN no SELECT.
+    consulta = (
+        select(Livro)
+        .join(Livro.autor)
+        .options(contains_eager(Livro.autor))
+        .order_by(Livro.id)
+        .offset(skip)
+        .limit(limit)
+    )
+
+    if titulo and titulo.strip():
+        consulta = consulta.where(Livro.titulo.icontains(titulo.strip(), autoescape=True))
+    if autor and autor.strip():
+        consulta = consulta.where(Autor.nome.icontains(autor.strip(), autoescape=True))
     if disponivel is not None:
         consulta = consulta.where(Livro.disponivel == disponivel)
+
     return db.scalars(consulta)
 
 
