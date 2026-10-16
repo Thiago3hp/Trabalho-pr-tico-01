@@ -1,149 +1,30 @@
-# Trabalhos Práticos — Arquitetura de Software
+# 📚 API da Biblioteca
 
-Repositório com os trabalhos práticos da disciplina **Arquitetura de Software**, do curso de Análise e Desenvolvimento de Sistemas (Bloco IV, 2026.2).
+API REST para gerenciar o acervo de uma biblioteca: **autores** e os **livros** que escreveram.
+Projeto prático desenvolvido com **FastAPI**, **SQLAlchemy** (ORM) e **Alembic** (migrações).
 
-| Trabalho | Tema | Solução | Enunciado |
-|---|---|---|---|
-| 01 | Associação, agregação e composição em um sistema escolar | [P2_A1_POO.ipynb](P2_A1_POO.ipynb) | [PDF](Docs/Trabalho%20Pr%C3%A1tico%2001.pdf) |
-| 02 | Herança e composição em uma locadora de veículos | [P2_A2_POO.ipynb](P2_A2_POO.ipynb) | [PDF](Docs/Trabalho%20Pr%C3%A1tico%2002.pdf) |
-| 03 | API REST em camadas com FastAPI, SQLAlchemy e Alembic | [FastAPI/](FastAPI/) | [PDF](Docs/Trabalho%20Pr%C3%A1tico%2003.pdf) |
+## Sumário
 
-## Estrutura do repositório
+1. [Modelo de negócio](#modelo-de-negócio)
+2. [Entidades e relacionamento](#entidades-e-relacionamento)
+3. [Tecnologias](#tecnologias)
+4. [Estrutura do projeto](#estrutura-do-projeto)
+5. [Como executar](#como-executar)
+6. [Endpoints](#endpoints)
+7. [Regras de negócio e tratamento de erros](#regras-de-negócio-e-tratamento-de-erros)
+8. [Exemplos de uso](#exemplos-de-uso)
+9. [Integrantes](#integrantes)
 
-```
-.
-├── Docs/                # enunciados dos três trabalhos (PDF)
-├── FastAPI/             # Trabalho 03: API da Biblioteca
-├── P2_A1_POO.ipynb      # Trabalho 01: sistema escolar
-└── P2_A2_POO.ipynb      # Trabalho 02: locadora de veículos
-```
+## Modelo de negócio
 
-## Trabalho 01 — Sistema escolar
+Uma biblioteca precisa:
 
-Modela as cinco entidades do cenário (`Escola`, `SalaDeAula`, `Professor`, `Aluno` e `Endereco`) e os três tipos de relacionamento entre elas.
+- cadastrar os **autores** do seu acervo;
+- cadastrar **livros**, sempre vinculados a um autor;
+- consultar o acervo e filtrar os livros **disponíveis** para empréstimo;
+- manter os dados atualizados e remover registros quando necessário.
 
-```mermaid
-classDiagram
-    class Escola {
-        nome
-        cnpj
-        aberta
-        adicionar_sala()
-        remover_sala()
-        contratar_professor()
-        fechar()
-        capacidade_total()
-    }
-    class SalaDeAula {
-        numero
-        capacidade
-        disponivel
-        reservar()
-        liberar()
-    }
-    class Professor {
-        nome
-        registro
-        disciplina
-        vincular_escola()
-        desvincular_escola()
-        lecionar()
-    }
-    class Aluno {
-        nome
-        matricula
-        data_nascimento
-        ativo
-        atualizar_endereco()
-        remover()
-    }
-    class Endereco {
-        rua
-        numero
-        bairro
-        cidade
-        estado
-        cep
-        atualizar()
-        formatar()
-    }
-    Escola "1" *-- "0..*" SalaDeAula : composição
-    Escola "0..*" -- "0..*" Professor : associação
-    Aluno "1" o-- "0..1" Endereco : agregação
-```
-
-| Relação | Tipo | Justificativa |
-|---|---|---|
-| `Escola` → `SalaDeAula` | Composição | A sala só é criada por `Escola.adicionar_sala()` e deixa de existir quando a escola fecha. |
-| `Escola` ↔ `Professor` | Associação (N:N) | Os dois existem de forma independente. Ao fechar uma escola, o professor continua existindo e mantém o vínculo com as demais. |
-| `Aluno` → `Endereco` | Agregação | O endereço nasce com o aluno, mas `Aluno.remover()` devolve o endereço, que segue existindo para uso em outro contexto (por exemplo, relatórios). |
-
-## Trabalho 02 — Locadora de veículos
-
-Estudo de caso de uma locadora, com duas hierarquias de herança e a composição entre contrato e condutor.
-
-```mermaid
-classDiagram
-    class Veiculo {
-        <<abstract>>
-        placa
-        modelo
-        ano
-        valor_diaria
-        esta_disponivel()
-        descricao()
-    }
-    class Cliente {
-        <<abstract>>
-        nome
-        documento
-        telefone
-        tipo_documento()
-    }
-    class Contrato {
-        data_inicio
-        data_termino_prevista
-        valor_total
-        status
-        calcular_valor_total()
-        finalizar()
-        cancelar()
-        excluir()
-    }
-    class Condutor {
-        nome
-        cnh
-        cnh_valida()
-    }
-    Veiculo <|-- Carro
-    Veiculo <|-- Moto
-    Veiculo <|-- Caminhao
-    Cliente <|-- PessoaFisica
-    Cliente <|-- PessoaJuridica
-    Contrato *-- Condutor : composição
-    Contrato --> Cliente : associação
-    Contrato --> Veiculo : associação
-```
-
-Regras implementadas:
-
-- um veículo não pode ter dois contratos ativos ao mesmo tempo;
-- a data de término não pode ser anterior à data de início;
-- o valor total é o número de dias multiplicado pela diária, com mínimo de uma diária;
-- finalizar ou cancelar um contrato libera o veículo;
-- o condutor é criado pelo contrato e deixa de existir quando o contrato é excluído.
-
-### Como executar os notebooks
-
-Os dois notebooks usam apenas a biblioteca padrão do Python. Abra o arquivo no Jupyter, no VS Code ou no Google Colab e execute a célula: a função `main()` monta um cenário de exemplo e imprime o resultado de cada regra.
-
-## Trabalho 03 — API da Biblioteca
-
-API REST para gerenciar o acervo de uma biblioteca: **autores** e os **livros** que escreveram. A biblioteca cadastra autores, cadastra livros sempre vinculados a um autor, consulta o acervo e filtra os livros disponíveis para empréstimo.
-
-A documentação completa, com regras de negócio e exemplos de requisição, está em [FastAPI/README.md](FastAPI/README.md).
-
-### Entidades e relacionamento
+## Entidades e relacionamento
 
 ```mermaid
 erDiagram
@@ -162,53 +43,196 @@ erDiagram
     }
 ```
 
-Relacionamento **1:N**: um autor possui vários livros e cada livro pertence a um único autor. A navegação é feita com `relationship()` nos dois lados (`Autor.livros` e `Livro.autor`).
+| Tabela | Campo | Tipo | Observações |
+|---|---|---|---|
+| `autores` | `id` | inteiro | chave primária |
+| | `nome` | texto (até 100) | obrigatório |
+| | `nacionalidade` | texto (até 50) | opcional |
+| `livros` | `id` | inteiro | chave primária |
+| | `titulo` | texto (até 150) | obrigatório |
+| | `ano_publicacao` | inteiro | opcional (0 a 2100) |
+| | `disponivel` | booleano | padrão `true` |
+| | `autor_id` | inteiro | chave estrangeira → `autores.id`, obrigatório, indexada |
 
-### Como executar
+**Relacionamento 1:N:** um autor possui vários livros e cada livro pertence a um único autor.
+No SQLAlchemy, a navegação é feita por `relationship()` nos dois lados: `Autor.livros` e `Livro.autor`.
 
-Pré-requisito: Python 3.10 ou superior.
+## Tecnologias
+
+- [FastAPI](https://fastapi.tiangolo.com/) — framework web e documentação Swagger automática
+- [SQLAlchemy 2](https://docs.sqlalchemy.org/) — ORM
+- [Alembic](https://alembic.sqlalchemy.org/) — migrações do banco
+- [Pydantic](https://docs.pydantic.dev/) — validação e serialização
+- SQLite — banco de dados (arquivo `biblioteca.db`)
+
+## Estrutura do projeto
+
+```
+FastAPI/
+├── alembic/
+│   ├── versions/        # migrations versionadas
+│   └── env.py
+├── app/
+│   ├── core/
+│   │   └── database.py  # engine, sessão, Base e dependência `SessionDep`
+│   ├── models/          # modelos SQLAlchemy (Autor, Livro)
+│   ├── schemas/         # schemas Pydantic (Create / Update / Response)
+│   ├── routers/         # endpoints agrupados por recurso
+│   └── main.py          # criação do app e registro dos routers
+├── tests/               # testes automatizados (pytest)
+├── alembic.ini
+├── popular_banco.py     # cadastra autores e livros de exemplo
+├── requirements.txt
+└── requirements-dev.txt # dependências de teste
+```
+
+## Como executar
+
+**Pré-requisito:** Python 3.10 ou superior.
+
+Todos os comandos abaixo devem ser executados dentro da pasta `FastAPI/`.
 
 ```bash
-cd FastAPI
-
 # 1. Criar e ativar o ambiente virtual
-python -m venv .venv
-.venv\Scripts\activate             # Linux/macOS: source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 
 # 2. Instalar as dependências
 pip install -r requirements.txt
 
-# 3. Criar o banco de dados pelas migrações
+# 3. Criar o banco de dados por meio das migrações
 alembic upgrade head
 
-# 4. Iniciar a aplicação
+# 4. (Opcional) Popular o banco com autores e livros de exemplo
+python popular_banco.py
+
+# 5. Iniciar a aplicação
 uvicorn app.main:app --reload
 ```
 
-Com a aplicação rodando:
+A API ficará disponível em `http://127.0.0.1:8000` e a documentação interativa (Swagger) em
+**http://127.0.0.1:8000/docs**.
 
-- Interface web do acervo: http://127.0.0.1:8000
-- Documentação interativa (Swagger): http://127.0.0.1:8000/docs
+> Em Debian/Ubuntu, se o passo 1 falhar, instale o pacote do venv: `sudo apt install python3-venv`.
 
-O banco SQLite (`biblioteca.db`) é criado exclusivamente pelo Alembic.
+### Migrações
 
-### Endpoints
+O banco é criado **exclusivamente** via Alembic. Depois de alterar os modelos, gere e aplique uma nova migration:
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/autores` | Cria um autor |
-| `GET` | `/autores` | Lista autores (`?skip=&limit=`) |
-| `GET` | `/autores/{id}` | Busca um autor pelo id |
-| `GET` | `/autores/{id}/livros` | Lista os livros de um autor |
-| `PATCH` | `/autores/{id}` | Atualiza parcialmente um autor |
-| `DELETE` | `/autores/{id}` | Remove um autor que não possui livros |
-| `POST` | `/livros` | Cria um livro (valida se o autor existe) |
-| `GET` | `/livros` | Lista livros (`?titulo=`, `?autor=`, `?disponivel=true\|false`, `?skip=&limit=`) |
-| `GET` | `/livros/{id}` | Busca um livro pelo id, incluindo o autor |
-| `PATCH` | `/livros/{id}` | Atualiza parcialmente um livro |
-| `DELETE` | `/livros/{id}` | Remove um livro |
+```bash
+alembic revision --autogenerate -m "descrição da mudança"
+alembic upgrade head
+```
 
-Códigos de erro: `404` para autor ou livro inexistente, `409` ao remover um autor que ainda possui livros e `422` para dados inválidos.
+Para desfazer a última migration: `alembic downgrade -1`.
+
+## Endpoints
+
+### Autores
+
+| Método | Rota | Descrição | Respostas |
+|---|---|---|---|
+| `POST` | `/autores` | Cria um autor | 201, 422 |
+| `GET` | `/autores` | Lista autores (paginação: `?skip=0&limit=100`) | 200 |
+| `GET` | `/autores/{id}` | Busca um autor pelo id | 200, 404 |
+| `GET` | `/autores/{id}/livros` | Lista os livros de um autor | 200, 404 |
+| `PATCH` | `/autores/{id}` | Atualiza parcialmente um autor | 200, 404, 422 |
+| `DELETE` | `/autores/{id}` | Remove um autor sem livros | 204, 404, 409 |
+
+### Livros
+
+| Método | Rota | Descrição | Respostas |
+|---|---|---|---|
+| `POST` | `/livros` | Cria um livro (valida se o autor existe) | 201, 404, 422 |
+| `GET` | `/livros` | Lista livros (busca `?titulo=` e `?autor=`, filtro `?disponivel=true\|false`, paginação `?skip=&limit=`) | 200 |
+| `GET` | `/livros/{id}` | Busca um livro pelo id (inclui o autor) | 200, 404 |
+| `PATCH` | `/livros/{id}` | Atualiza parcialmente um livro | 200, 404, 422 |
+| `DELETE` | `/livros/{id}` | Remove um livro | 204, 404 |
+
+## Regras de negócio e tratamento de erros
+
+| Situação | Status |
+|---|---|
+| Recurso criado com sucesso | `201 Created` |
+| Remoção realizada com sucesso | `204 No Content` |
+| Autor ou livro não encontrado pelo id | `404 Not Found` |
+| Criar/atualizar livro com `autor_id` inexistente | `404 Not Found` |
+| Remover autor que ainda possui livros | `409 Conflict` |
+| Dados inválidos (campo obrigatório ausente, tipo errado, fora dos limites) | `422 Unprocessable Entity` |
+
+Os schemas Pydantic são separados por finalidade: `*Create` (entrada na criação), `*Update`
+(todos os campos opcionais, usado no `PATCH`) e `*Response` (saída da API).
+
+## Exemplos de uso
+
+**Criar um autor**
+
+```bash
+curl -X POST http://127.0.0.1:8000/autores \
+  -H "Content-Type: application/json" \
+  -d '{"nome": "Machado de Assis", "nacionalidade": "Brasileira"}'
+```
+
+**Criar um livro para esse autor**
+
+```bash
+curl -X POST http://127.0.0.1:8000/livros \
+  -H "Content-Type: application/json" \
+  -d '{"titulo": "Dom Casmurro", "ano_publicacao": 1899, "autor_id": 1}'
+```
+
+Resposta (`201`):
+
+```json
+{
+  "id": 1,
+  "titulo": "Dom Casmurro",
+  "ano_publicacao": 1899,
+  "disponivel": true,
+  "autor_id": 1,
+  "autor": { "id": 1, "nome": "Machado de Assis", "nacionalidade": "Brasileira" }
+}
+```
+
+**Marcar o livro como emprestado**
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/livros/1 \
+  -H "Content-Type: application/json" \
+  -d '{"disponivel": false}'
+```
+
+**Listar apenas livros disponíveis**
+
+```bash
+curl "http://127.0.0.1:8000/livros?disponivel=true"
+```
+
+**Buscar livros por título e/ou autor**
+
+```bash
+# título contém "casmurro"
+curl "http://127.0.0.1:8000/livros?titulo=casmurro"
+
+# nome do autor contém "machado"
+curl "http://127.0.0.1:8000/livros?autor=machado"
+
+# filtros combinados (E): título + autor + somente disponíveis
+curl "http://127.0.0.1:8000/livros?titulo=dom&autor=machado&disponivel=true"
+```
+
+A busca por `titulo` e `autor` é parcial (o texto pode estar em qualquer parte do nome) e ignora
+maiúsculas/minúsculas. Quando mais de um filtro é informado, todos precisam ser atendidos. Sem
+resultados, a API retorna `200` com lista vazia.
+
+## Testes
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q
+```
+
+Os testes usam um banco SQLite em memória e não alteram o `biblioteca.db`.
 
 ## Integrantes
 
@@ -219,3 +243,5 @@ Códigos de erro: `404` para autor ou livro inexistente, `409` ao remover um aut
 | Kayk de Oliveira Silva | 01821798 |
 | Thiago Pereira Sousa | 01791169 |
 | Marcelo Iuri Soares Silveira | 01821799 |
+
+
