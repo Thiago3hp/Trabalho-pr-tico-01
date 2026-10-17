@@ -243,5 +243,3 @@ Os testes usam um banco SQLite em memória e não alteram o `biblioteca.db`.
 | Kayk de Oliveira Silva | 01821798 |
 | Thiago Pereira Sousa | 01791169 |
 | Marcelo Iuri Soares Silveira | 01821799 |
-
-
